@@ -11,8 +11,16 @@ Sigue los siguiente pasos:
 ***
 Despues con la aplicacion de postman probar el api:
 ***
-    1 - Realizar una peticion POST a la siguiente URI: http://localhost:8080/usuario
-    2 - Ingresar un body tipo JSON con el siguiente formato:
+    1 - Realizar una peticion POST a la siguiente URI: http://localhost:8080/login e ingresar en el body lo siguiente (esto retorna un token):
+***
+        {
+            "username":"admin",
+            "password":"123456"
+        }
+***  
+            
+    2 - El token retornado en la anterior api se debe ingresar como Authorization de tipo Bearer Token en la api http://localhost:8080/crearUsuario es aqui donde el body debera de ir con el siguiente formato:
+    
 ***
         {
             "username": "string",
