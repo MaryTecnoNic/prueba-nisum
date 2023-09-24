@@ -11,5 +11,8 @@ public interface UsuarioService {
 
     List<Usuario> getListUsuario();
 
+    Usuario getUsuarioByUsername(String username);
+
     ResponseEntity<Mensaje> guardarUsuario(UsuarioDTO oUsuarioDTO);
+
 }

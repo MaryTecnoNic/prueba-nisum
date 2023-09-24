@@ -1,6 +1,7 @@
 package com.nisum.demo.serviceImpl;
 
 import com.nisum.demo.DAO.UsuarioDAO;
+import com.nisum.demo.configuration.jwt.JwtUtils;
 import com.nisum.demo.entity.DTO.PhoneDTO;
 import com.nisum.demo.entity.DTO.UsuarioDTO;
 import com.nisum.demo.entity.Usuario;
@@ -11,13 +12,13 @@ import com.nisum.demo.utils.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService {
@@ -28,9 +29,20 @@ public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService
     @Autowired
     private UsuarioPhoneService oUsuarioPhoneService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    JwtUtils oJwtUtils;
+
     @Override
     public List<Usuario> getListUsuario() {
         return oUsuarioDAO.findAll();
+    }
+
+    @Override
+    public Usuario getUsuarioByUsername(String username) {
+        return oUsuarioDAO.findOneByUsername(username).orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe."));
     }
 
     private Usuario saveUsuario(Usuario usuario) {
@@ -99,7 +111,8 @@ public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService
            oUsuario.setIsactive(true);
            oUsuario.setCreated(date);
            oUsuario.setLast_login(date);
-           oUsuario.setToken(Utilities.getJWTToken(oUsuarioDTO.getUsername()));
+           oUsuario.setToken(oJwtUtils.generateAccesToken(oUsuarioDTO.getUsername()));
+           oUsuario.setPassword(new BCryptPasswordEncoder().encode(oUsuario.getPassword()));
            Usuario oUsuarioConID = this.saveUsuario(oUsuario);
 
            List<PhoneDTO> list = oUsuarioDTO.getPhone();
@@ -137,6 +150,7 @@ public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService
            return new ResponseEntity<>(oMensaje, HttpStatus.BAD_REQUEST);
        }
     }
+
 
 
 

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuario")
 public class UsuarioController {
 
     private UsuarioService oUsuarioService;
@@ -31,11 +30,18 @@ public class UsuarioController {
             @ApiResponse(code = 403, message = "Prohibido."),
             @ApiResponse(code = 404, message = "No encontrado.")
     })
-    @GetMapping
+    @GetMapping("/verUsuario")
     @ResponseStatus(HttpStatus.OK)
     public List<Usuario> getListUsuario() {
         return oUsuarioService.getListUsuario();
     }
+
+
+//    @GetMapping("/buscar")
+//    @ResponseStatus(HttpStatus.OK)
+//    public Usuario buscarUsuario() {
+//       return oUsuarioService.getUsuarioByUsername("admin");
+//    }
 
     @ApiOperation(value = "Crea usuario.")
     @ApiResponses(value = {
@@ -44,7 +50,7 @@ public class UsuarioController {
             @ApiResponse(code = 403, message = "Prohibido."),
             @ApiResponse(code = 404, message = "No encontrado.")
     })
-    @PostMapping
+    @PostMapping("/crearUsuario")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Mensaje> saveUser(@RequestBody UsuarioDTO oUsuarioDTO) {
         return oUsuarioService.guardarUsuario(oUsuarioDTO);
