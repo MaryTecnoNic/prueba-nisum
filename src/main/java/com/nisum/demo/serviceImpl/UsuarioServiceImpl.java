@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -34,6 +36,13 @@ public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService
 
     @Autowired
     JwtUtils oJwtUtils;
+
+//    public UsuarioServiceImpl(UsuarioDAO oUsuarioDAO, UsuarioPhoneService oUsuarioPhoneService, PasswordEncoder passwordEncoder, JwtUtils oJwtUtils) {
+//        this.oUsuarioDAO = oUsuarioDAO;
+//        this.oUsuarioPhoneService = oUsuarioPhoneService;
+//        this.passwordEncoder = passwordEncoder;
+//        this.oJwtUtils = oJwtUtils;
+//    }
 
     @Override
     public List<Usuario> getListUsuario() {
@@ -63,7 +72,7 @@ public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService
         Mensaje oMensaje;
        try {
 
-           if(oUsuarioDTO.getUsername() == null || oUsuarioDTO.getEmail() == null ||  oUsuarioDTO.getPassword() == null || oUsuarioDTO.getPhone() == null || oUsuarioDTO.getPhone() == null){
+           if(Objects.isNull(oUsuarioDTO.getUsername())  || Objects.isNull(oUsuarioDTO.getEmail()) ||  Objects.isNull(oUsuarioDTO.getPassword()) || Objects.isNull(oUsuarioDTO.getPhone()) || Objects.isNull(oUsuarioDTO.getPhone())){
                oMensaje = new Mensaje.Builder()
                        .mensaje("Los campos no permite nulo.")
                        .builder();
@@ -107,13 +116,13 @@ public class UsuarioServiceImpl implements com.nisum.demo.service.UsuarioService
            }
 
            Usuario oUsuario = new Usuario(oUsuarioDTO);
-           java.sql.Date date = new java.sql.Date(new Date().getTime());
+//           java.sql.Date date = new java.sql.Date(new Date().getTime());
            oUsuario.setIsactive(true);
-           oUsuario.setCreated(date);
-           oUsuario.setLast_login(date);
+           oUsuario.setCreated(Date.valueOf(LocalDate.now()));
+           oUsuario.setLast_login(Date.valueOf(LocalDate.now()));
            oUsuario.setToken(oJwtUtils.generateAccesToken(oUsuarioDTO.getUsername()));
            oUsuario.setPassword(new BCryptPasswordEncoder().encode(oUsuario.getPassword()));
-           Usuario oUsuarioConID = this.saveUsuario(oUsuario);
+           Usuario oUsuarioConID = saveUsuario(oUsuario);
 
            List<PhoneDTO> list = oUsuarioDTO.getPhone();
            try{
